@@ -1,0 +1,623 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>CvSU — IT/CS Workshop 2026</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --green: #00a86b;
+            --green-dark: #007a4d;
+            --green-glow: rgba(0,168,107,0.18);
+            --gold: #f0c040;
+            --bg: #0b0f0d;
+            --surface: #111a14;
+            --surface2: #192118;
+            --border: rgba(0,168,107,0.18);
+            --text: #e8f0eb;
+            --muted: #7a9682;
+        }
+
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        html { scroll-behavior: smooth; }
+
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* ── NOISE TEXTURE OVERLAY ── */
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+            pointer-events: none;
+            z-index: 0;
+            opacity: 0.6;
+        }
+
+        /* ── NAV ── */
+        nav {
+            position: fixed;
+            top: 0; left: 0; right: 0;
+            z-index: 100;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 18px 48px;
+            background: rgba(11,15,13,0.85);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .nav-logo {
+            font-family: 'Syne', sans-serif;
+            font-weight: 800;
+            font-size: 1rem;
+            letter-spacing: 0.08em;
+            color: var(--green);
+            text-transform: uppercase;
+        }
+
+        .nav-links { display: flex; gap: 32px; }
+        .nav-links a {
+            color: var(--muted);
+            text-decoration: none;
+            font-size: 0.875rem;
+            font-weight: 500;
+            letter-spacing: 0.03em;
+            transition: color 0.2s;
+        }
+        .nav-links a:hover { color: var(--text); }
+
+        /* ── HERO ── */
+        .hero {
+            position: relative;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: flex-start;
+            padding: 120px 48px 80px;
+            overflow: hidden;
+        }
+
+        /* Big glowing orb */
+        .hero::after {
+            content: '';
+            position: absolute;
+            top: -200px; right: -200px;
+            width: 700px; height: 700px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(0,168,107,0.14) 0%, transparent 70%);
+            pointer-events: none;
+        }
+
+        .hero-tag {
+            display: inline-block;
+            font-family: 'Syne', sans-serif;
+            font-size: 0.7rem;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            color: var(--green);
+            border: 1px solid var(--green);
+            padding: 5px 14px;
+            border-radius: 2px;
+            margin-bottom: 28px;
+            animation: fadeUp 0.7s ease both;
+        }
+
+        .hero h1 {
+            font-family: 'Syne', sans-serif;
+            font-weight: 800;
+            font-size: clamp(3rem, 8vw, 7rem);
+            line-height: 0.95;
+            letter-spacing: -0.03em;
+            max-width: 800px;
+            animation: fadeUp 0.7s 0.1s ease both;
+        }
+
+        .hero h1 span {
+            color: var(--green);
+            display: block;
+        }
+
+        .hero-sub {
+            margin-top: 32px;
+            font-size: 1.1rem;
+            color: var(--muted);
+            max-width: 480px;
+            line-height: 1.7;
+            animation: fadeUp 0.7s 0.2s ease both;
+        }
+
+        .hero-meta {
+            display: flex;
+            gap: 40px;
+            margin-top: 52px;
+            animation: fadeUp 0.7s 0.3s ease both;
+        }
+
+        .meta-item { display: flex; flex-direction: column; gap: 4px; }
+        .meta-label {
+            font-size: 0.7rem;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            color: var(--muted);
+        }
+        .meta-value {
+            font-family: 'Syne', sans-serif;
+            font-weight: 700;
+            font-size: 1.1rem;
+            color: var(--text);
+        }
+
+        .hero-cta {
+            margin-top: 48px;
+            animation: fadeUp 0.7s 0.4s ease both;
+            display: flex;
+            gap: 16px;
+            align-items: center;
+        }
+
+        .btn-primary {
+            display: inline-block;
+            background: var(--green);
+            color: #0b0f0d;
+            font-family: 'Syne', sans-serif;
+            font-weight: 700;
+            font-size: 0.9rem;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            padding: 14px 32px;
+            border-radius: 3px;
+            text-decoration: none;
+            transition: background 0.2s, transform 0.15s;
+        }
+        .btn-primary:hover { background: #00c97e; transform: translateY(-1px); }
+
+        .btn-ghost {
+            color: var(--muted);
+            font-size: 0.875rem;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: color 0.2s;
+        }
+        .btn-ghost:hover { color: var(--text); }
+        .btn-ghost::after { content: '↓'; }
+
+        /* ── DIVIDER ── */
+        .section-divider {
+            border: none;
+            border-top: 1px solid var(--border);
+            margin: 0 48px;
+        }
+
+        /* ── ABOUT SECTION ── */
+        .about {
+            padding: 100px 48px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 80px;
+            align-items: start;
+            max-width: 1100px;
+            margin: auto;
+        }
+
+        .about-label {
+            font-size: 0.7rem;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            color: var(--green);
+            margin-bottom: 20px;
+        }
+
+        .about h2 {
+            font-family: 'Syne', sans-serif;
+            font-weight: 700;
+            font-size: 2.4rem;
+            line-height: 1.15;
+            letter-spacing: -0.02em;
+        }
+
+        .about-body {
+            font-size: 1rem;
+            line-height: 1.8;
+            color: var(--muted);
+        }
+
+        .tracks {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+            margin-top: 12px;
+        }
+
+        .track {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 14px 16px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: border-color 0.2s, background 0.2s;
+        }
+        .track:hover { border-color: var(--green); background: var(--surface2); }
+        .track-dot {
+            width: 8px; height: 8px;
+            border-radius: 50%;
+            background: var(--green);
+            flex-shrink: 0;
+        }
+        .track-num {
+            margin-left: auto;
+            font-size: 0.7rem;
+            color: var(--muted);
+            font-family: 'Syne', sans-serif;
+        }
+
+        /* ── REGISTRATION ── */
+        .registration {
+            padding: 100px 48px;
+            max-width: 640px;
+            margin: 0 auto;
+        }
+
+        .reg-label {
+            font-size: 0.7rem;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            color: var(--green);
+            margin-bottom: 12px;
+        }
+
+        .registration h2 {
+            font-family: 'Syne', sans-serif;
+            font-weight: 700;
+            font-size: 2.2rem;
+            letter-spacing: -0.02em;
+            margin-bottom: 8px;
+        }
+
+        .reg-note { color: var(--muted); font-size: 0.9rem; margin-bottom: 40px; }
+
+        .form-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 36px;
+        }
+
+        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+
+        .field {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            margin-bottom: 20px;
+        }
+
+        .field label {
+            font-size: 0.75rem;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: var(--muted);
+            font-weight: 500;
+        }
+
+        .field input,
+        .field select {
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            color: var(--text);
+            font-family: 'DM Sans', sans-serif;
+            font-size: 0.95rem;
+            padding: 11px 14px;
+            outline: none;
+            transition: border-color 0.2s, box-shadow 0.2s;
+            width: 100%;
+            appearance: none;
+        }
+
+        .field select {
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%237a9682' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 14px center;
+            padding-right: 36px;
+            cursor: pointer;
+        }
+
+        .field select option { background: #111a14; }
+
+        .field input:focus,
+        .field select:focus {
+            border-color: var(--green);
+            box-shadow: 0 0 0 3px var(--green-glow);
+        }
+
+        .field input::placeholder { color: #3d5046; }
+
+        .checkbox-row {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            margin-bottom: 28px;
+        }
+
+        .checkbox-row input[type="checkbox"] {
+            width: 16px; height: 16px;
+            margin-top: 2px;
+            accent-color: var(--green);
+            flex-shrink: 0;
+            cursor: pointer;
+        }
+
+        .checkbox-row span {
+            font-size: 0.85rem;
+            color: var(--muted);
+            line-height: 1.5;
+        }
+
+        .checkbox-row a { color: var(--green); text-decoration: none; }
+
+        .submit-btn {
+            width: 100%;
+            padding: 15px;
+            background: var(--green);
+            color: #0b0f0d;
+            font-family: 'Syne', sans-serif;
+            font-weight: 700;
+            font-size: 0.9rem;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background 0.2s, transform 0.15s;
+        }
+        .submit-btn:hover { background: #00c97e; transform: translateY(-1px); }
+        .submit-btn:active { transform: translateY(0); }
+
+        /* ── SUCCESS MESSAGE ── */
+        .success-msg {
+            display: none;
+            text-align: center;
+            padding: 32px;
+        }
+        .success-msg .check { font-size: 3rem; margin-bottom: 16px; }
+        .success-msg h3 {
+            font-family: 'Syne', sans-serif;
+            font-size: 1.4rem;
+            margin-bottom: 8px;
+        }
+        .success-msg p { color: var(--muted); }
+
+        /* ── FOOTER ── */
+        footer {
+            border-top: 1px solid var(--border);
+            padding: 40px 48px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+
+        .footer-brand {
+            font-family: 'Syne', sans-serif;
+            font-weight: 800;
+            font-size: 0.9rem;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: var(--green);
+        }
+
+        .footer-copy { color: var(--muted); font-size: 0.8rem; }
+
+        .footer-contact {
+            color: var(--muted);
+            font-size: 0.85rem;
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+        .footer-contact:hover { color: var(--green); }
+
+        /* ── ANIMATIONS ── */
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        /* ── RESPONSIVE ── */
+        @media (max-width: 768px) {
+            nav { padding: 16px 24px; }
+            .nav-links { display: none; }
+            .hero { padding: 100px 24px 60px; }
+            .hero-meta { flex-direction: column; gap: 20px; }
+            .about { grid-template-columns: 1fr; gap: 40px; padding: 60px 24px; }
+            .registration { padding: 60px 24px; }
+            .form-row { grid-template-columns: 1fr; }
+            footer { padding: 28px 24px; flex-direction: column; align-items: flex-start; }
+            .section-divider { margin: 0 24px; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+    <div class="nav-logo">CvSU — IT/CS Workshop</div>
+    <div class="nav-links">
+        <a href="#about">About</a>
+        <a href="#register">Register</a>
+        <a href="mailto:itworkshop@cvsu.edu.ph">Contact</a>
+    </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+    <div class="hero-tag">March 27, 2026 · CvSU Silang Campus</div>
+    <h1>
+        Tech <br>
+        <span>Workshop</span>
+        2026
+    </h1>
+    <p class="hero-sub">
+        Explore the frontier of technology—cybersecurity, web development, software engineering, and beyond.
+        Hosted by the Cavite State University College of IT.
+    </p>
+
+    <div class="hero-meta">
+        <div class="meta-item">
+            <span class="meta-label">Date</span>
+            <span class="meta-value">March 27, 2026</span>
+        </div>
+        <div class="meta-item">
+            <span class="meta-label">Venue</span>
+            <span class="meta-value">CvSU Main Campus</span>
+        </div>
+        <div class="meta-item">
+            <span class="meta-label">Open to</span>
+            <span class="meta-value">BSIT · BSCS</span>
+        </div>
+    </div>
+
+    <div class="hero-cta">
+        <a href="#register" class="btn-primary">Register Now</a>
+        <a href="#about" class="btn-ghost">Learn more</a>
+    </div>
+</section>
+
+<hr class="section-divider">
+
+<!-- ABOUT -->
+<div class="about" id="about">
+    <div>
+        <div class="about-label">About the Workshop</div>
+        <h2>Where students shape the future of tech</h2>
+    </div>
+    <div>
+        <p class="about-body">
+            The IT/CS Workshop 2026 brings together students, faculty, and industry practitioners for a full-day
+            immersive experience. Expect live demos, hands-on sessions, and keynote talks from real-world engineers.
+        </p>
+
+        <div class="tracks" style="margin-top: 28px;">
+            <div class="track"><div class="track-dot"></div> Web Development <span class="track-num">Track 01</span></div>
+            <div class="track"><div class="track-dot"></div> Cybersecurity &amp; Ethical Hacking <span class="track-num">Track 02</span></div>
+            <div class="track"><div class="track-dot"></div> Software Engineering &amp; Agile <span class="track-num">Track 03</span></div>
+            <div class="track"><div class="track-dot"></div> AI &amp; Data Science <span class="track-num">Track 04</span></div>
+        </div>
+    </div>
+</div>
+
+<hr class="section-divider">
+
+<!-- REGISTRATION -->
+<section class="registration" id="register">
+    <div class="reg-label">Registration</div>
+    <h2>Secure your spot</h2>
+    <p class="reg-note">Limited slots only. Fill in your details below to confirm your attendance.</p>
+
+    <div class="form-card">
+        <form id="regForm">
+            <div class="form-row">
+                <div class="field">
+                    <label for="fname">First Name</label>
+                    <input type="text" id="fname" name="fname" placeholder="Juan" required>
+                </div>
+                <div class="field">
+                    <label for="lname">Last Name</label>
+                    <input type="text" id="lname" name="lname" placeholder="dela Cruz" required>
+                </div>
+            </div>
+
+            <div class="field">
+                <label for="email">Email Address</label>
+                <input type="email" id="email" name="email" placeholder="you@cvsu.edu.ph" required>
+            </div>
+
+            <div class="field">
+                <label for="studentid">Student ID</label>
+                <input type="text" id="studentid" name="studentid" placeholder="e.g. 2026-00001">
+            </div>
+
+            <div class="form-row">
+                <div class="field">
+                    <label for="course">Course</label>
+                    <select id="course" name="course" required>
+                        <option value="">Select course</option>
+                        <option value="BSIT">BSIT</option>
+                        <option value="BSCS">BSCS</option>
+                        <option value="Other">Other</option>
+                    </select>
+                </div>
+                <div class="field">
+                    <label for="year">Year Level</label>
+                    <select id="year" name="year" required>
+                        <option value="">Select year</option>
+                        <option>1st Year</option>
+                        <option>2nd Year</option>
+                        <option>3rd Year</option>
+                        <option>4th Year</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="field">
+                <label for="track">Preferred Track</label>
+                <select id="track" name="track">
+                    <option value="">Select a track (optional)</option>
+                    <option>Web Development</option>
+                    <option>Cybersecurity &amp; Ethical Hacking</option>
+                    <option>Software Engineering &amp; Agile</option>
+                    <option>AI &amp; Data Science</option>
+                </select>
+            </div>
+
+            <div class="checkbox-row">
+                <input type="checkbox" id="agree" name="agree" required>
+                <span>I agree to the <a href="#">event guidelines</a> and confirm my attendance on March 15, 2026 at CvSU Main Campus.</span>
+            </div>
+
+            <button type="submit" class="submit-btn">Confirm Registration →</button>
+        </form>
+
+        <div class="success-msg" id="successMsg">
+            <div class="check">✅</div>
+            <h3>You're registered!</h3>
+            <p>Check your email for confirmation details. See you on March 15.</p>
+        </div>
+    </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+    <div class="footer-brand">CvSU — IT/CS Workshop 2026</div>
+    <a href="mailto:luisandrew.reyes@cvsu.edu.ph" class="footer-contact">itworkshop@cvsu.edu.ph</a>
+    <div class="footer-copy">© 2026 Cavite State University Silang-Campus. All rights reserved.</div>
+</footer>
+
+<script>
+    document.getElementById('regForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        this.style.display = 'none';
+        document.getElementById('successMsg').style.display = 'block';
+    });
+</script>
+
+</body>
+</html>
